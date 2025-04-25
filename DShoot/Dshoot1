@@ -1,0 +1,84 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.util.ArrayList;
+
+public class ShooterGame extends JPanel implements ActionListener, KeyListener {
+    private Timer timer;
+    private Player player;
+    private ArrayList<Bullet> bullets;
+    private ArrayList<Enemy> enemies;
+
+    public ShooterGame() {
+        setFocusable(true);
+        setPreferredSize(new Dimension(800, 600));
+        addKeyListener(this);
+        player = new Player(400, 500);
+        bullets = new ArrayList<>();
+        enemies = new ArrayList<>();
+        timer = new Timer(16, this);
+        timer.start();
+    }
+
+    @Override
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        player.draw(g);
+        for (Bullet bullet : bullets) {
+            bullet.draw(g);
+        }
+        for (Enemy enemy : enemies) {
+            enemy.draw(g);
+        }
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        player.update();
+        for (Bullet bullet : bullets) {
+            bullet.update();
+        }
+        for (Enemy enemy : enemies) {
+            enemy.update();
+        }
+        repaint();
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        int key = e.getKeyCode();
+        if (key == KeyEvent.VK_LEFT) {
+            player.setDx(-5);
+        }
+        if (key == KeyEvent.VK_RIGHT) {
+            player.setDx(5);
+        }
+        if (key == KeyEvent.VK_SPACE) {
+            bullets.add(new Bullet(player.getX(), player.getY()));
+        }
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+        int key = e.getKeyCode();
+        if (key == KeyEvent.VK_LEFT || key == KeyEvent.VK_RIGHT) {
+            player.setDx(0);
+        }
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+    }
+
+    public static void main(String[] args) {
+        JFrame frame = new JFrame("2D Shooter Game");
+        ShooterGame game = new ShooterGame();
+        frame.add(game);
+        frame.pack();
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
+    }
+}
